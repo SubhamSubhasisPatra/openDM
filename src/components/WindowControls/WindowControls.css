@@ -1,0 +1,48 @@
+/* CustomWindowControls.css */
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  background-color: transparent; /* Semi-transparent background */
+  -webkit-app-region: drag; /* Make the entire titlebar draggable */
+  backdrop-filter: blur(10px); /* Apply blur effect */
+}
+
+.draggable-area {
+  flex-grow: 1;
+  height: 100%;
+  -webkit-app-region: drag; /* Makes this area draggable */
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  -webkit-app-region: no-drag; /* Exclude the button area from being draggable */
+}
+
+.window-button {
+  width: 12px;
+  height: 12px;
+  margin: 0 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.window-button.close {
+  background-color: #fc5753;
+  border-radius: 5px solid black;
+}
+
+.window-button.minimize {
+  background-color: #fdbc40; /* Yellow */
+}
+
+.window-button.maximize {
+  background-color: #36c84b; /* Green */
+}
+
+.window-button:hover {
+  opacity: 0.8;
+}
