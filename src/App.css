@@ -1,0 +1,21 @@
+/* App.css */
+body,
+html,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  overflow: hidden; /* Ensure no scrollbars */
+  border-radius: 5px;
+
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+}
