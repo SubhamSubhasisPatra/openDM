@@ -57,7 +57,9 @@
       {
         "title": "xDownloadManager",
         "width": 800,
-        "height": 600,
+        "height": 500,
+        "minHeight": 500,
+        "minWidth": 700,
         "decorations": false,
         "resizable": true,
         "transparent": true,
