@@ -6,7 +6,7 @@ use log::error;
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<(), CustomError> {
     let conn = establish_connection()?;
-    error!("The file data{}", file_info.file_name);
+    println!("The file data: {}", file_info.file_name);
     conn.execute(
         "INSERT INTO file_info (file_name, size, status, time_of_creation) VALUES (?1, ?2, ?3, ?4)",
         params![
@@ -37,4 +37,9 @@ pub fn get_all_file_info() -> Result<Vec<FileInfo>, CustomError> {
         file_info_list.push(file_info?);
     }
     Ok(file_info_list)
+}
+
+#[tauri::command]
+pub fn greet(name: &str) -> String {
+    format!("Hello {}", name)
 }
