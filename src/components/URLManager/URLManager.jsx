@@ -1,20 +1,33 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
 
-export default function URLManager() {
+export default function URLManager({onDWLDListChange}) {
+
+    const [fileId, setFileId] = useState(0);
+    const [downloadList, setDownloadList] = useState([]);
+
+    useEffect(() => {
+        invoke('get_all_file_info').then(results => setDownloadList(results));
+        onDWLDListChange(downloadList);
+    }, [downloadList]);
+
     const downloadClickHandler = async () => {
 
         let fileInfo = {
-            file_name: "Pinku",
+            id: fileId,
+            file_name: "Subham",
             size: 1284710,
             status: "Failed",
-            time_of_creation: "20th May 2024",
+            speed: "12 MB/s",
         };
 
 
         const result = await invoke("store_file_info", {fileInfo});
+        setFileId(result?.length || 0);
+        setDownloadList(result || []);
+
         console.log(result);
     };
 
