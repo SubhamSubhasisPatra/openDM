@@ -4,7 +4,7 @@ use rusqlite::params;
 use log::error;
 
 #[tauri::command]
-pub fn store_file_info(file_info: FileInfo) -> Result<(), CustomError> {
+pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
     let conn = establish_connection()?;
     println!("The file data: {}", file_info.file_name);
     conn.execute(
@@ -16,7 +16,8 @@ pub fn store_file_info(file_info: FileInfo) -> Result<(), CustomError> {
             file_info.time_of_creation
         ],
     )?;
-    Ok(())
+
+    return get_all_file_info()
 }
 
 #[tauri::command]

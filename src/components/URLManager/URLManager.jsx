@@ -5,18 +5,17 @@ import {invoke} from "@tauri-apps/api/tauri";
 
 export default function URLManager() {
     const downloadClickHandler = async () => {
-        // Correct the keys to match the case expected by the Tauri function
+
         let fileInfo = {
-            file_name: "Subham Subhasis",
-            size: 1000,
-            status: "Completed",
-            time_of_creation: "12th May 2024",
+            file_name: "Pinku",
+            size: 1284710,
+            status: "Failed",
+            time_of_creation: "20th May 2024",
         };
 
-// Pass the fileInfo object as expected by the Tauri function
-        await invoke("store_file_info", {fileInfo});
-        const greet = await invoke("get_all_file_info");
-        console.log(greet);
+
+        const result = await invoke("store_file_info", {fileInfo});
+        console.log(result);
     };
 
     return (
