@@ -1,6 +1,7 @@
 // WindowControls.js
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { appWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/tauri";
 import closeIcon from "../../assets/windows/close.png";
 import minimizeIcon from "../../assets/windows/minimize.png";
 import maximizeIcon from "../../assets/windows/maximize.png";
@@ -8,10 +9,26 @@ import "./WindowControls.css";
 import ToggleButton from "../ToggleButton/ToggleButton";
 
 export default function WindowControls() {
+  const [osPlatform, setOsPlatform] = useState(null);
+
+  useEffect(() => {
+    async function fetchPlatform() {
+      const os = await invoke("get_os");
+      setOsPlatform(os);
+    }
+    fetchPlatform();
+  }, []);
+
+  const memoizedPlatform = useMemo(() => osPlatform, [osPlatform]);
+  const styleName = memoizedPlatform === "Mac OS" ? "flex-start" : "flex-end";
+
   return (
-    <div className="titlebar" data-tauri-drag-region="true">
+    <div
+      className="titlebar"
+      style={{ justifyContent: styleName }}
+      data-tauri-drag-region="true"
+    >
       <div className="window-controls">
-        {/* <ToggleButton /> */}
         <div className="window-button" onClick={() => appWindow.close()}>
           <img src={closeIcon} alt="Close" className="window-icon" />
         </div>

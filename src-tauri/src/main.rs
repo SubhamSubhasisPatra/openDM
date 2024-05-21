@@ -3,9 +3,9 @@
 mod commands;
 mod database;
 mod errors;
+mod os;
 
 fn main() {
-    
     // Initialize logger
     env_logger::init();
 
@@ -13,7 +13,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             commands::store_file_info,
             commands::get_all_file_info,
-            commands::greet
+            commands::greet,
+            os::get_os
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

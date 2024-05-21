@@ -1,11 +1,12 @@
 use crate::database::{establish_connection, FileInfo};
 use crate::errors::CustomError;
+// use log::error;
 use rusqlite::params;
 
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
     let conn = establish_connection()?;
-    println!("The file data: {}", file_info.file_name);
+    // error!("The file data: {}", file_info.file_name);
     conn.execute(
         "INSERT INTO file_info (id , file_name, size, status, speed) VALUES (?1, ?2, ?3, ?4, ?5)",
         params![
