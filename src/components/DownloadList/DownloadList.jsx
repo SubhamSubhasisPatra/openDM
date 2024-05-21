@@ -19,7 +19,7 @@ const DownloadList = ({fileList}) => {
             <tbody>
             {fileList && fileList.map(file => {
                 return (
-                    <tr className="bg-zinc-100">
+                    <tr key={file.id} className="bg-zinc-100">
                         <td className="px-4 py-2">{file.id}</td>
                         <td className="px-4 py-2 flex items-center">
                             <span className="text-blue-500 mr-2">📄</span> {file.file_name}
