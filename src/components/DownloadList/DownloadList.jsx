@@ -27,10 +27,10 @@ const DownloadList = ({fileList}) => {
                 </thead>
                 <tbody>
                 {
-                    fileList && fileList.map(file => {
+                    fileList && fileList.map((file, index) => {
                         const statusPrev = `${file.status}%`;
                         return (
-                            <tr className="border-t border-zinc-200 dark:border-zinc-700">
+                            <tr key={index} className="border-t border-zinc-200 dark:border-zinc-700">
                                 <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.file_name}</td>
                                 <td className="px-4 py-2">
                                     <div className="flex items-center">

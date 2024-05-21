@@ -57,10 +57,10 @@
     "windows": [
       {
         "title": "xDownloadManager",
-        "width": 1000,
-        "height": 550,
-        "minHeight": 550,
-        "minWidth": 1000,
+        "width": 1150,
+        "height": 700,
+        "minHeight": 700,
+        "minWidth": 1150,
         "decorations": false,
         "resizable": true,
         "transparent": true,
