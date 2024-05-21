@@ -1,7 +1,8 @@
+use log::error;
 use crate::database::{establish_connection, FileInfo};
 use crate::errors::CustomError;
 // use log::error;
-use rusqlite::params;
+use rusqlite::{Connection, params};
 
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
@@ -40,6 +41,14 @@ pub fn get_all_file_info() -> Result<Vec<FileInfo>, CustomError> {
         file_info_list.push(file_info?);
     }
     Ok(file_info_list)
+}
+
+#[tauri::command]
+pub fn delete_file(id: u64) -> Result<(), CustomError> {
+    let conn = establish_connection()?;
+    error!("The id to be deleted : {}", id);
+    conn.execute("DELETE from file_info where id = ?1", params![id,])?;
+    Ok(())
 }
 
 #[tauri::command]
