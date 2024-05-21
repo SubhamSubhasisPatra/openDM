@@ -1,66 +1,40 @@
-import React from 'react'
+import React from 'react';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBars, faPlay, faPause, faCircleCheck, faClockRotateLeft, faClock} from "@fortawesome/free-solid-svg-icons";
 
 export const SidePanel = () => {
     return (
 
         <div className="w-60 h-screen bg-zinc-100 dark:bg-zinc-900 p-4">
             <div className="mb-6">
-                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-200">Tasks</h2>
-                <ul className="mt-2 space-y-2">
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        All
-                    </li>
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Running
-                    </li>
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Suspended
-                    </li>
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Complete
-                    </li>
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Incomplete
-                    </li>
+                <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-200">Tasks</h2>
+                <ul className="mt-2 space-y-2 ">
+                    {[
+                        {icon: faBars, text: 'All'},
+                        {icon: faPlay, text: 'Running'},
+                        {icon: faPause, text: 'Suspended'},
+                        {icon: faCircleCheck, text: 'Complete'},
+                        {icon: faClockRotateLeft, text: 'Incomplete'},
+                    ].map((item, index) => (
+                        <li key={index} className="flex items-center text-zinc-600 dark:text-zinc-400">
+                            <FontAwesomeIcon icon={item.icon} style={{marginRight: 8}}/>
+                            <span style={{marginLeft: 8}}>{item.text}</span>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <div className="mb-6">
                 <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">Schedules</h2>
-                <ul className="mt-2 space-y-2">
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Waiting
-                    </li>
-                    <li className="flex items-center text-zinc-600 dark:text-zinc-400">
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 11H6v-2h2v2zm4 0h-2v-2h2v2zm2 0h-2v-2h2v2z"></path>
-                        </svg>
-                        Complete
-                    </li>
+                <ul className="mt-2 space-y-2 ">
+                    {[
+                        {icon: faClock, text: 'Waiting'},
+                        {icon: faCircleCheck, text: 'Complete'},
+                    ].map((item, index) => (
+                        <li key={index} className="flex items-center text-zinc-600 dark:text-zinc-400">
+                            <FontAwesomeIcon icon={item.icon} style={{marginRight: 8}}/>
+                            <span style={{marginLeft: 8}}>{item.text}</span>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <div className="mb-6">
