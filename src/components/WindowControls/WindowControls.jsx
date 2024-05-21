@@ -6,7 +6,7 @@ import closeIcon from "../../assets/windows/close.png";
 import minimizeIcon from "../../assets/windows/minimize.png";
 import maximizeIcon from "../../assets/windows/maximize.png";
 import "./WindowControls.css";
-import ToggleButton from "../ToggleButton/ToggleButton";
+import { MAC_OS } from "../../common/constants";
 
 export default function WindowControls() {
   const [osPlatform, setOsPlatform] = useState(null);
@@ -20,7 +20,7 @@ export default function WindowControls() {
   }, []);
 
   const memoizedPlatform = useMemo(() => osPlatform, [osPlatform]);
-  const styleName = memoizedPlatform === "Mac OS" ? "flex-start" : "flex-end";
+  const styleName = memoizedPlatform === MAC_OS ? "flex-start" : "flex-end";
 
   return (
     <div
