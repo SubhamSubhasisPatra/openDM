@@ -38,20 +38,23 @@ export default function URLManager({onDWLDListChange}) {
                 <span className="text-sm bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">5</span>
             </div>
             <div className="flex items-center space-x-2">
-                <input type="text" placeholder="Search"
+                <input type="text" placeholder="Download URL"
                        className="px-4 py-2 border rounded-lg text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600"/>
-                <button onClick={downloadClickHandler}
-                        className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">
-                    <FontAwesomeIcon icon={faDownload}/>
-                </button>
-                <button
-                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">
-                    <FontAwesomeIcon icon={faPlay}/>
-                </button>
-                <button
-                    className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">
-                    <FontAwesomeIcon icon={faPause}/>
-                </button>
+                <div className="flex justify-center">
+                    {[
+                        {icon: faDownload, onClick: downloadClickHandler},
+                        {icon: faPlay},
+                        {icon: faPause},
+                    ].map((item, index) => (
+                        <button
+                            key={index}
+                            onClick={item.onClick}
+                            className="p-3 m-1 rounded-lg w-10 h-10 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 flex justify-center align-center"
+                        >
+                            <FontAwesomeIcon icon={item.icon}/>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     )
