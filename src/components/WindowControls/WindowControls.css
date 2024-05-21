@@ -1,41 +1,41 @@
 .titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
-  position: fixed;
-  padding-bottom: 6px;
-  padding-top: 6px;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000; /* Ensure it is above other content */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    position: fixed;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Ensure it is above other content */
 }
 
 .window-controls {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  -webkit-app-region: no-drag; /* Exclude the button area from being draggable */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    -webkit-app-region: no-drag; /* Exclude the button area from being draggable */
 }
 
 .window-button {
-  width: 24px; /* Adjust size as needed */
-  height: 24px; /* Adjust size as needed */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0 3px;
-  padding: 0;
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0 3px;
+    padding: 0;
 }
 
 .window-icon {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Ensure the image fits within the button */
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure the image fits within the button */
 }
 
 .window-button:hover {
-    opacity: .8;
+    opacity: 0.8;
 }

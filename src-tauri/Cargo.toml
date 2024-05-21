@@ -11,11 +11,24 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "window-close", "window-set-maximizable", "window-unmaximize", "window-unminimize", "window-set-max-size", "window-minimize", "window-maximize", "window-start-dragging", "window-set-closable", "shell-open"] }
+tauri = { version = "1", features = [
+    "macos-private-api",
+    "window-close",
+    "window-set-maximizable",
+    "window-unmaximize",
+    "window-unminimize",
+    "window-set-max-size",
+    "window-minimize",
+    "window-maximize",
+    "window-start-dragging",
+    "window-set-closable",
+    "shell-open",
+] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "0.4"
 env_logger = "0.9"
+os_info = "3.2"
 
 [dependencies.rusqlite]
 version = "0.31.0"
