@@ -5,7 +5,7 @@ import {faBars, faPlay, faPause, faCircleCheck, faClockRotateLeft, faClock} from
 export const SidePanel = () => {
     return (
 
-        <div className="w-60 h-screen bg-zinc-100 dark:bg-zinc-900 p-4">
+        <div className="w-60 h-screen bg-zinc-100 dark:bg-zinc-900 p-4 overflow-y-auto scrollbar-hid">
             <div className="mb-6">
                 <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-200">Tasks</h2>
                 <ul className="mt-2 space-y-2 ">

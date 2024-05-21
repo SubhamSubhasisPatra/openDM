@@ -16,7 +16,7 @@ const DownloadList = ({fileList}) => {
 
         <div className="h-screen overflow-y-auto scrollbar-hid">
             <table className="min-w-full bg-white dark:bg-zinc-800">
-                <thead>
+                <thead className="sticky top-0 bg-white">
                 <tr>
                     <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Filename</th>
                     <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Status</th>
