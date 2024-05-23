@@ -7,17 +7,29 @@ import {SelectedItemContext} from "../../contexts/SelectedItemContext.jsx";
 
 const DownloadList = ({fileList}) => {
 
-    const [downloadList, setDownloadList] = useState(fileList);
     const {selectedItem} = useContext(SelectedItemContext);
 
+    // Initialize downloadList based on selectedItem
+    const getInitialDownloadList = () => {
+        if (selectedItem === 'All' || !selectedItem) {
+            return fileList;
+        }
+        return fileList.filter(ele => ele.status === selectedItem);
+    };
+
+    const [downloadList, setDownloadList] = useState(getInitialDownloadList);
+
     const downloadFilter = (selectedFilter) => {
-        if (selectedFilter === 'All' || selectedFilter === null) return setDownloadList(fileList.filter(ele => ele.status !== selectedFilter));
-        setDownloadList(fileList.filter(ele => ele.status === selectedFilter));
+        if (selectedFilter === 'All' || !selectedFilter) {
+            setDownloadList(fileList);
+        } else {
+            setDownloadList(fileList.filter(ele => ele.status === selectedFilter));
+        }
     };
 
     useEffect(() => {
-        downloadFilter(selectedItem)
-    }, [selectedItem]);
+        downloadFilter(selectedItem);
+    }, [selectedItem, fileList]);
 
     const deleteHandler = async (id) => {
         await invoke('delete_file', {id});

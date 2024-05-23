@@ -5,7 +5,7 @@ import {SelectedItemContext} from "../../../contexts/SelectedItemContext.jsx";
 
 export const Tasks = () => {
 
-    const {setSelectedItem} = useContext(SelectedItemContext);
+    const {selectedItem, setSelectedItem} = useContext(SelectedItemContext);
 
     const itemClickHandler = (item) => {
         setSelectedItem(item);
@@ -27,8 +27,11 @@ export const Tasks = () => {
                     <li
                         onClick={() => itemClickHandler(item.text)}
                         key={index}
-                        className="flex items-center text-zinc-600 dark:text-zinc-400 hover:bg-white hover:p-1 p-1 hover:border-1 hover:text-black dark:hover:bg-white dark:hover:text-black rounded-md transition-colors"
-                    >
+                        className={`flex items-center text-zinc-600 dark:text-zinc-400 p-1 rounded-md transition-colors ${
+                            selectedItem === item.text
+                                ? 'bg-white text-black border-1'
+                                : 'hover:bg-white hover:text-black dark:hover:bg-white dark:hover:text-black'
+                        }`}>
                         <FontAwesomeIcon className={`w-5 mr-2`} icon={item.icon} style={{marginRight: 8}}/>
                         <span style={{marginLeft: 8}}>{item.text}</span>
                     </li>

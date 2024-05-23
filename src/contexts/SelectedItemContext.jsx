@@ -4,7 +4,7 @@ import {createContext, useState} from 'react';
 const SelectedItemContext = createContext();
 
 const SelectedItemProvider = ({children}) => {
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState('All');
 
 
     return (
