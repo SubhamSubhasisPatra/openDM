@@ -2,6 +2,7 @@ import React, {useContext} from 'react'
 import {faBars, faCircleCheck, faClockRotateLeft, faPause, faPlay} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {SelectedItemContext} from "../../../contexts/SelectedItemContext.jsx";
+import {FILTER_ALL} from "../../../common/constants/index.js";
 
 export const Tasks = () => {
 
@@ -12,7 +13,7 @@ export const Tasks = () => {
     }
 
     const items = [
-        {icon: faBars, text: 'All'},
+        {icon: faBars, text: FILTER_ALL},
         {icon: faPlay, text: 'Running'},
         {icon: faPause, text: 'Suspended'},
         {icon: faCircleCheck, text: 'Complete'},

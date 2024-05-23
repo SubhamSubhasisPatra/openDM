@@ -4,7 +4,7 @@ import {faDownload, faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
 import documents from "./docs.js";
 
-export default function URLManager({onDWLDListChange}) {
+export default function URLManager({onDWLDListChange, filteredCount, filteredType}) {
 
     const [fileId, setFileId] = useState(0);
     const [downloadList, setDownloadList] = useState([]);
@@ -37,9 +37,9 @@ export default function URLManager({onDWLDListChange}) {
     return (
         <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
-                <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">All</h2>
+                <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">{filteredType}</h2>
                 <span
-                    className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">5</span>
+                    className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">{filteredCount}</span>
             </div>
             <div className="flex items-center space-x-2">
                 <input type="text" placeholder="Download URL"

@@ -3,15 +3,16 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
 import {SelectedItemContext} from "../../contexts/SelectedItemContext.jsx";
+import {FILTER_ALL} from "../../common/constants/index.js";
 
 
-const DownloadList = ({fileList}) => {
+const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
 
     const {selectedItem} = useContext(SelectedItemContext);
 
     // Initialize downloadList based on selectedItem
     const getInitialDownloadList = () => {
-        if (selectedItem === 'All' || !selectedItem) {
+        if (selectedItem === FILTER_ALL || !selectedItem) {
             return fileList;
         }
         return fileList.filter(ele => ele.status === selectedItem);
@@ -20,7 +21,16 @@ const DownloadList = ({fileList}) => {
     const [downloadList, setDownloadList] = useState(getInitialDownloadList);
 
     const downloadFilter = (selectedFilter) => {
-        if (selectedFilter === 'All' || !selectedFilter) {
+        let currentFilter;
+
+        if (!selectedFilter || selectedFilter === FILTER_ALL) {
+            currentFilter = FILTER_ALL;
+        } else {
+            currentFilter = selectedFilter;
+        }
+
+        onFilterTypeChange(currentFilter);
+        if (selectedFilter === FILTER_ALL || !selectedFilter) {
             setDownloadList(fileList);
         } else {
             setDownloadList(fileList.filter(ele => ele.status === selectedFilter));
@@ -29,6 +39,7 @@ const DownloadList = ({fileList}) => {
 
     useEffect(() => {
         downloadFilter(selectedItem);
+        onFilterCountChange(downloadList.length);
     }, [selectedItem, fileList]);
 
     const deleteHandler = async (id) => {
