@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
+import documents from "./docs.js";
 
 export default function URLManager({onDWLDListChange}) {
 
@@ -23,19 +24,22 @@ export default function URLManager({onDWLDListChange}) {
             speed: "12 MB/s",
         };
 
+        for await (const ele of documents) {
+            console.log(ele)
+            const result = await invoke("store_file_info", {fileInfo: ele});
+            setFileId(result?.length || 0);
+            setDownloadList(result || []);
 
-        const result = await invoke("store_file_info", {fileInfo});
-        setFileId(result?.length || 0);
-        setDownloadList(result || []);
-
-        console.log(result);
+            console.log(result);
+        }
     };
 
     return (
         <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
                 <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">All</h2>
-                <span className="text-sm bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">5</span>
+                <span
+                    className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">5</span>
             </div>
             <div className="flex items-center space-x-2">
                 <input type="text" placeholder="Download URL"

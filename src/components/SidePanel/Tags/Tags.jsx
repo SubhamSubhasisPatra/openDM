@@ -15,7 +15,7 @@ export const Tags = () => {
             <ul className="mt-2 space-y-2">
                 {items.map((item, index) => (
                     <li key={index}
-                        className="flex items-center text-zinc-600 dark:text-zinc-400 hover:bg-white hover:text-black dark:hover:bg-white dark:hover:text-black rounded-md transition-colors"
+                        className="flex items-center text-zinc-600 dark:text-zinc-400 hover:bg-white hover:p-1 p-1 hover:border-1 hover:text-black dark:hover:bg-white dark:hover:text-black rounded-md transition-colors"
                     >
                         <span className={`w-3 h-3 ${item.color} rounded-full mr-2`}></span>
                         {item.label}

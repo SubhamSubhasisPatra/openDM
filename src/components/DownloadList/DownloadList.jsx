@@ -1,12 +1,23 @@
-import React from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
+import {SelectedItemContext} from "../../contexts/SelectedItemContext.jsx";
 
 
 const DownloadList = ({fileList}) => {
 
-    fileList = fileList.sort((a, b) => a.id - b.id);
+    const [downloadList, setDownloadList] = useState(fileList);
+    const {selectedItem} = useContext(SelectedItemContext);
+
+    const downloadFilter = (selectedFilter) => {
+        if (selectedFilter === 'All' || selectedFilter === null) return setDownloadList(fileList.filter(ele => ele.status !== selectedFilter));
+        setDownloadList(fileList.filter(ele => ele.status === selectedFilter));
+    };
+
+    useEffect(() => {
+        downloadFilter(selectedItem)
+    }, [selectedItem]);
 
     const deleteHandler = async (id) => {
         await invoke('delete_file', {id});
@@ -27,7 +38,7 @@ const DownloadList = ({fileList}) => {
                 </thead>
                 <tbody>
                 {
-                    fileList && fileList.map((file, index) => {
+                    downloadList && downloadList.map((file, index) => {
                         const statusPrev = `${file.status}%`;
                         return (
                             <tr key={index} className="border-t border-zinc-200 dark:border-zinc-700">
