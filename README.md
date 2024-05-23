@@ -21,15 +21,19 @@ cd openDM
 
 ### UI Setup
 
-<code>
-    cd src && npm ci && npm tun dev
-</code>
+```
+cd src
+npm ci
+npm tun dev
+```
 
 ### Backend Setup
 
-<code>
-cd src-tauri && cargo install && cargo run
-</code>
+```
+cd src-tauri
+cargo install
+cargo run
+```
 
 
 **Get in Touch**
