@@ -36,7 +36,7 @@
         "setCursorVisible": false,
         "setDecorations": false,
         "setFocus": false,
-        "setFullscreen": false,
+        "setFullscreen": true,
         "setIcon": false,
         "setIgnoreCursorEvents": false,
         "setMaxSize": true,

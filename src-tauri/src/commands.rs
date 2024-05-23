@@ -1,8 +1,8 @@
-use log::error;
 use crate::database::{establish_connection, FileInfo};
 use crate::errors::CustomError;
-// use log::error;
-use rusqlite::{Connection, params};
+use rusqlite::params;
+
+use log::error;
 
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
