@@ -6,13 +6,13 @@
 
 *Project Details*
  ****
-This is a Download Manager with support for both Normal and Torrent Download using [Tauri](https://tauri.app/) ,
-This app use   `React (UI) + Rust (Backend)`.
+This is a Download Manager with support for both normal and torrent Downloads using [Tauri](https://tauri.app/) ,
+This app uses `React (UI) + Rust (Backend)`.
 
 **Project Setup**
 *****
 
-*Rust Need to be installed [Rust](https://www.rust-lang.org/tools/install)*
+*[Rust](https://www.rust-lang.org/tools/install) needs to be installed. *
 
 ``
 git clone https://github.com/SubhamSubhasisPatra/openDM.git
