@@ -13,7 +13,6 @@ export const Schedules = () => {
 
     let items = [
         {icon: faClock, text: 'Waiting'},
-        {icon: faCircleCheck, text: 'Complete'},
     ];
 
     return (
