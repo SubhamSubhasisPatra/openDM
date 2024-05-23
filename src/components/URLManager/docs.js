@@ -69,6 +69,19 @@ const documents = [
         status: "Suspended",
         speed: "7 MB/s",
     },
+    {
+        id: 11,
+        file_name: "User_Doc_Test.docx",
+        size: 1327498,
+        status: "Waiting",
+        speed: "70 MB/s",
+    }, {
+        id: 12,
+        file_name: "TrainingMaterial_w&b.docx",
+        size: 1327498,
+        status: "Waiting",
+        speed: "17 MB/s",
+    },
 ];
 
 export default documents;
