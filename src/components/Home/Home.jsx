@@ -1,17 +1,16 @@
-import React, {useState} from "react";
-import URLManager from "../URLManager/URLManager";
-import DownloadList from "../DownloadList/DownloadList";
-import AllDM from "../AllDM/AllDM";
+import React from "react";
+import {SidePanel} from "../SidePanel/SidePanel.jsx";
+import {MainPanel} from "../MainPanel/MainPanel.jsx";
+import {SelectedItemProvider} from "../../contexts/SelectedItemContext.jsx";
 
 export default function Home() {
 
-    const [filesList, setFilesList] = useState([]);
-
     return (
-        <div className="mx-auto p-6">
-            <URLManager onDWLDListChange={(list) => setFilesList(list)}/>
-            <AllDM/>
-            <DownloadList fileList={filesList}/>
-        </div>
+        <SelectedItemProvider>
+            <div className="flex h-screen">
+                <SidePanel/>
+                <MainPanel/>
+            </div>
+        </SelectedItemProvider>
     );
 }

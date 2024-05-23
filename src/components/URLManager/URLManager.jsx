@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload} from "@fortawesome/free-solid-svg-icons";
+import {faDownload, faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
+import documents from "./docs.js";
 
 export default function URLManager({onDWLDListChange}) {
 
@@ -23,27 +24,43 @@ export default function URLManager({onDWLDListChange}) {
             speed: "12 MB/s",
         };
 
+        for await (const ele of documents) {
+            console.log(ele)
+            const result = await invoke("store_file_info", {fileInfo: ele});
+            setFileId(result?.length || 0);
+            setDownloadList(result || []);
 
-        const result = await invoke("store_file_info", {fileInfo});
-        setFileId(result?.length || 0);
-        setDownloadList(result || []);
-
-        console.log(result);
+            console.log(result);
+        }
     };
 
     return (
-        <div className="flex justify-between items-center mb-4">
-            <input
-                type="text"
-                placeholder="Paste your link here..."
-                className="form-input px-4 py-2 w-full rounded-md border-2 border-zinc-200 focus:border-blue-500 focus:outline-none"
-            />
-            <button
-                onClick={downloadClickHandler}
-                className="ml-4 bg-blue-800 text-white p-3 rounded-lg flex justify-center items-center"
-            >
-                <FontAwesomeIcon icon={faDownload}/>
-            </button>
+        <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+                <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">All</h2>
+                <span
+                    className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">5</span>
+            </div>
+            <div className="flex items-center space-x-2">
+                <input type="text" placeholder="Download URL"
+                       className="px-4 py-2 border rounded-lg text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600"/>
+                <div className="flex justify-center">
+                    {[
+                        {icon: faDownload, onClick: downloadClickHandler},
+                        {icon: faPlay},
+                        {icon: faPause},
+                    ].map((item, index) => (
+                        <button
+                            key={index}
+                            onClick={item.onClick}
+                            className="p-3 m-1 rounded-lg w-10 h-10 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 flex justify-center align-center"
+                        >
+                            <FontAwesomeIcon icon={item.icon}/>
+                        </button>
+                    ))}
+                </div>
+            </div>
         </div>
-    );
+    )
+        ;
 }

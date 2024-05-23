@@ -13,6 +13,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             commands::store_file_info,
             commands::get_all_file_info,
+            commands::delete_file,
             commands::greet,
             os::get_os
         ])

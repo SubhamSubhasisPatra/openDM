@@ -1,43 +1,84 @@
-import React from "react";
+import React, {useContext, useEffect, useState} from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {invoke} from "@tauri-apps/api/tauri";
+import {SelectedItemContext} from "../../contexts/SelectedItemContext.jsx";
+
 
 const DownloadList = ({fileList}) => {
 
-    fileList = fileList.sort((a, b) => a.id - b.id);
+    const {selectedItem} = useContext(SelectedItemContext);
+
+    // Initialize downloadList based on selectedItem
+    const getInitialDownloadList = () => {
+        if (selectedItem === 'All' || !selectedItem) {
+            return fileList;
+        }
+        return fileList.filter(ele => ele.status === selectedItem);
+    };
+
+    const [downloadList, setDownloadList] = useState(getInitialDownloadList);
+
+    const downloadFilter = (selectedFilter) => {
+        if (selectedFilter === 'All' || !selectedFilter) {
+            setDownloadList(fileList);
+        } else {
+            setDownloadList(fileList.filter(ele => ele.status === selectedFilter));
+        }
+    };
+
+    useEffect(() => {
+        downloadFilter(selectedItem);
+    }, [selectedItem, fileList]);
+
+    const deleteHandler = async (id) => {
+        await invoke('delete_file', {id});
+    }
 
     return (
-        <table className="w-full text-left">
-            <thead>
-            <tr className="text-zinc-700">
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">NAME</th>
-                <th className="px-4 py-2">SIZE</th>
-                <th className="px-4 py-2">SPEED</th>
-                <th className="px-4 py-2">STATUS</th>
-                <th className="px-4 py-2">CONTROL</th>
-            </tr>
-            </thead>
-            <tbody>
-            {fileList && fileList.map(file => {
-                return (
-                    <tr key={file.id} className="bg-zinc-100">
-                        <td className="px-4 py-2">{file.id}</td>
-                        <td className="px-4 py-2 flex items-center">
-                            <span className="text-blue-500 mr-2">📄</span> {file.file_name}
-                        </td>
-                        <td className="px-4 py-2">{file.size}</td>
-                        <td className="px-4 py-2">{file.speed}</td>
-                        <td className="px-4 py-2">{file.status}</td>
-                        <td className="px-4 py-2 flex items-center">
-                            <span className="text-red-500 mr-2">||</span>
-                            <span className="text-red-500">✖</span>
-                        </td>
-                    </tr>
-                )
-            })
-            }
-            </tbody>
-        </table>
-    );
+
+        <div className="h-screen overflow-y-auto scrollbar-hid">
+            <table className="min-w-full bg-white dark:bg-zinc-800">
+                <thead className="sticky top-0 bg-white">
+                <tr>
+                    <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Filename</th>
+                    <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Status</th>
+                    <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Speed</th>
+                    <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Size</th>
+                    <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    downloadList && downloadList.map((file, index) => {
+                        const statusPrev = `${file.status}%`;
+                        return (
+                            <tr key={index} className="border-t border-zinc-200 dark:border-zinc-700">
+                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.file_name}</td>
+                                <td className="px-4 py-2">
+                                    <div className="flex items-center">
+                                        <div className="w-24 h-4 bg-zinc-200 dark:bg-zinc-700 rounded-full mr-2">
+                                            <div className="h-4 bg-green-500 rounded-full"
+                                                 style={{width: '100%'}}></div>
+                                        </div>
+                                        <span className="text-zinc-600 dark:text-zinc-400">{statusPrev}</span>
+                                    </div>
+                                </td>
+                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.speed}</td>
+                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.size}</td>
+                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">
+                                    <button onClick={() => deleteHandler(file.id)}>
+                                        <FontAwesomeIcon icon={faTrashCan}/>
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })
+                }
+
+                </tbody>
+            </table>
+        </div>);
 };
 
 export default DownloadList;

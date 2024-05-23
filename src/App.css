@@ -1,9 +1,10 @@
 .app {
   height: 100vh;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: theme("colors.light.background");
   color: theme("colors.light.text"); /* Light mode text */
   overflow: hidden;
+  border: 2px solid lightgray;
 }
 
 .app.dark {

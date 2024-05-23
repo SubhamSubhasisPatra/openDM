@@ -36,7 +36,7 @@
         "setCursorVisible": false,
         "setDecorations": false,
         "setFocus": false,
-        "setFullscreen": false,
+        "setFullscreen": true,
         "setIcon": false,
         "setIgnoreCursorEvents": false,
         "setMaxSize": true,
@@ -57,10 +57,10 @@
     "windows": [
       {
         "title": "xDownloadManager",
-        "width": 800,
-        "height": 500,
-        "minHeight": 500,
-        "minWidth": 700,
+        "width": 1150,
+        "height": 700,
+        "minHeight": 700,
+        "minWidth": 1150,
         "decorations": false,
         "resizable": true,
         "transparent": true,
