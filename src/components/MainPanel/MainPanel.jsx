@@ -5,12 +5,16 @@ import URLManager from "../URLManager/URLManager.jsx";
 export const MainPanel = () => {
 
     const [filesList, setFilesList] = useState([]);
+    const [filteredCount, setFilteredCount] = useState(0);
+    const [filteredType, setFilteredType] = useState(0);
 
 
     return (
         <div className="flex-1 bg-white p-4 rounded-l-lg border-l-2 border-t-2">
-            <URLManager onDWLDListChange={(list) => setFilesList(list)}/>
-            <DownloadList fileList={filesList}/>
+            <URLManager onDWLDListChange={(list) => setFilesList(list)} filteredCount={filteredCount}
+                        filteredType={filteredType}/>
+            <DownloadList fileList={filesList} onFilterCountChange={setFilteredCount}
+                          onFilterTypeChange={setFilteredType}/>
         </div>
     );
 }
