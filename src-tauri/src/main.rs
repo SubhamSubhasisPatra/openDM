@@ -4,6 +4,8 @@ mod commands;
 mod database;
 mod errors;
 mod os;
+mod config;
+mod constants;
 
 fn main() {
     // Initialize logger

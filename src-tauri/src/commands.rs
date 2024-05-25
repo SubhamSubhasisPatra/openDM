@@ -1,7 +1,7 @@
 use crate::database::{establish_connection, FileInfo};
+use crate::config::config::AppConfig;
 use crate::errors::CustomError;
 use rusqlite::params;
-
 use log::error;
 
 #[tauri::command]
@@ -54,4 +54,15 @@ pub fn delete_file(id: u64) -> Result<(), CustomError> {
 #[tauri::command]
 pub fn greet(name: &str) -> String {
     format!("Hello {}", name)
+}
+
+///
+/// # Description: Update the download path
+/// # Arguments
+/// * `path`: String
+/// returns: ()
+
+fn update_download_path(path: String) {
+    let mut config = AppConfig::load();
+    config.update_download_path(path);
 }
