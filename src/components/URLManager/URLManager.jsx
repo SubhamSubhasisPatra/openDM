@@ -8,7 +8,7 @@ import {MAC_OS, WINDOWS} from "../../common/constants/index.js";
 export default function URLManager({onDWLDListChange, filteredCount, filteredType}) {
     const [fileId, setFileId] = useState(0);
     const [downloadList, setDownloadList] = useState([]);
-    const [URL, setURL] = useState('https://nodejs.org/dist/v20.13.1/node-v20.13.1-x64.msi');
+    const [URL, setURL] = useState('https://nodejs.org/dist/v20.13.1/node-v20.13.1-x64.msi'); //TODO: The Default URL will be removed
     const [warning, setWarning] = useState(false);
 
     useEffect(() => {
