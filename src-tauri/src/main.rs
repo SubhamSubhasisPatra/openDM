@@ -6,6 +6,9 @@ mod errors;
 mod os;
 mod config;
 mod constants;
+mod download_manager;
+
+use download_manager::metadata_retriever::fetch_file_info;
 
 fn main() {
     // Initialize logger
@@ -16,8 +19,8 @@ fn main() {
             commands::store_file_info,
             commands::get_all_file_info,
             commands::delete_file,
-            commands::greet,
-            os::get_os
+            os::get_os,
+            fetch_file_info
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

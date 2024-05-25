@@ -21,14 +21,20 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
             return;
         }
 
-        console.log("Input Value:", URL);
+        const response = await invoke('fetch_file_info', {url: URL});
+        console.log("Input Value:", response);
         setURL('');
+
+        if (!response.file_name) {
+            console.log("Invalid URL")
+            return
+        }
 
         let selectedPath;
         try {
             selectedPath = await save({
                 title: 'Save File',
-                defaultPath: 'nodejs.exe',
+                defaultPath: response.file_name,
                 filters: [
                     {
                         name: 'All Files',
@@ -36,7 +42,8 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
                     },
                 ],
             });
-            console.log(selectedPath); // Use the selected path as needed
+
+            console.log(selectedPath);
         } catch (error) {
             console.error('Error selecting path:', error);
         }

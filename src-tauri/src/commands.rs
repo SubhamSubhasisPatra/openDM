@@ -3,6 +3,7 @@ use crate::config::config::AppConfig;
 use crate::errors::CustomError;
 use rusqlite::params;
 use log::error;
+use serde::de::Error;
 
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
@@ -61,8 +62,8 @@ pub fn greet(name: &str) -> String {
 /// # Arguments
 /// * `path`: String
 /// returns: ()
-
-fn update_download_path(path: String) {
+#[tauri::command]
+pub fn update_download_path(path: String) {
     let mut config = AppConfig::load();
     config.update_download_path(path);
 }
