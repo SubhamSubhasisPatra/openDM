@@ -19,6 +19,8 @@ fn main() {
             commands::store_file_info,
             commands::get_all_file_info,
             commands::delete_file,
+            commands::update_download_path,
+            commands::get_default_download_path,
             os::get_os,
             fetch_file_info
         ])

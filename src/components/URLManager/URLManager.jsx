@@ -1,19 +1,65 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {invoke} from "@tauri-apps/api/tauri";
 import {save} from "@tauri-apps/api/dialog";
+import {MAC_OS, WINDOWS} from "../../common/constants/index.js";
 
 export default function URLManager({onDWLDListChange, filteredCount, filteredType}) {
     const [fileId, setFileId] = useState(0);
     const [downloadList, setDownloadList] = useState([]);
-    const [URL, setURL] = useState('');
+    const [URL, setURL] = useState('https://nodejs.org/dist/v20.13.1/node-v20.13.1-x64.msi');
     const [warning, setWarning] = useState(false);
 
     useEffect(() => {
         invoke('get_all_file_info').then(results => setDownloadList(results));
         onDWLDListChange(downloadList);
     }, [downloadList]);
+
+    const pathSelector = async (response) => {
+
+        try {
+
+            let selectedPath = await invoke('get_default_download_path');
+
+            if (selectedPath) return
+
+            selectedPath = await save({
+                title: 'Save File',
+                defaultPath: response.file_name,
+                filters: [
+                    {
+                        name: 'All Files',
+                        extensions: ['*'],
+                    },
+                ],
+            });
+
+            await pathManager(selectedPath);
+        } catch (error) {
+            console.error('Error selecting path:', error);
+        }
+    }
+
+    const pathManager = async (selectedPath) => {
+        if (!selectedPath) return;
+
+        try {
+            const os = await invoke("get_os");
+
+            const splitDelimiter = os === WINDOWS ? "\\" : "/";
+            const joinDelimiter = os === WINDOWS ? "\\" : "/";
+
+            selectedPath = selectedPath.split(splitDelimiter)
+                .slice(0, -1)
+                .join(joinDelimiter);
+
+            await invoke('update_download_path', {path: selectedPath});
+            console.log('Download directory set to:', selectedPath);
+        } catch (error) {
+            console.error('Error invoking update_download_path:', error);
+        }
+    }
 
     const downloadClickHandler = async () => {
         if (URL.trim().length === 0) {
@@ -30,33 +76,7 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
             return
         }
 
-        let selectedPath;
-        try {
-            selectedPath = await save({
-                title: 'Save File',
-                defaultPath: response.file_name,
-                filters: [
-                    {
-                        name: 'All Files',
-                        extensions: ['*'],
-                    },
-                ],
-            });
-
-            console.log(selectedPath);
-        } catch (error) {
-            console.error('Error selecting path:', error);
-        }
-
-        if (selectedPath) {
-            try {
-                // Save the directory path to the config
-                await invoke('update_download_path', {path: selectedPath});
-                console.log('Download directory set to:', selectedPath);
-            } catch (error) {
-                console.error('Error invoking update_download_path:', error);
-            }
-        }
+        await pathSelector(response);
     };
 
     const handleInputChange = (event) => {
