@@ -9,6 +9,7 @@ mod constants;
 mod download_manager;
 
 use download_manager::metadata_retriever::fetch_file_info;
+use download_manager::download_test;
 
 fn main() {
     // Initialize logger
@@ -22,7 +23,8 @@ fn main() {
             commands::update_download_path,
             commands::get_default_download_path,
             os::get_os,
-            fetch_file_info
+            fetch_file_info,
+            download_test
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

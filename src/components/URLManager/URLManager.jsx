@@ -7,24 +7,24 @@ import {MAC_OS, WINDOWS} from "../../common/constants/index.js";
 
 export default function URLManager({onDWLDListChange, filteredCount, filteredType}) {
     const [fileId, setFileId] = useState(0);
+    const [selectedPath, setSelectedPath] = useState('');
     const [downloadList, setDownloadList] = useState([]);
-    const [URL, setURL] = useState('https://nodejs.org/dist/v20.13.1/node-v20.13.1-x64.msi'); //TODO: The Default URL will be removed
+    const [URL, setURL] = useState('https://cdimage.ubuntu.com/ubuntu-base/releases/focal/release/SHA256SUMS.gpg'); //TODO: The Default URL will be removed
     const [warning, setWarning] = useState(false);
 
     useEffect(() => {
         invoke('get_all_file_info').then(results => setDownloadList(results));
+        invoke('get_default_download_path').then(path => setSelectedPath(path));
         onDWLDListChange(downloadList);
-    }, [downloadList]);
+    }, [downloadList, selectedPath]);
 
     const pathSelector = async (response) => {
 
         try {
 
-            let selectedPath = await invoke('get_default_download_path');
-
             if (selectedPath) return
 
-            selectedPath = await save({
+            let currentPath = await save({
                 title: 'Save File',
                 defaultPath: response.file_name,
                 filters: [
@@ -35,14 +35,14 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
                 ],
             });
 
-            await pathManager(selectedPath);
+            await pathManager(currentPath);
         } catch (error) {
             console.error('Error selecting path:', error);
         }
     }
 
-    const pathManager = async (selectedPath) => {
-        if (!selectedPath) return;
+    const pathManager = async (currentPath) => {
+        if (!currentPath) return;
 
         try {
             const os = await invoke("get_os");
@@ -50,12 +50,13 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
             const splitDelimiter = os === WINDOWS ? "\\" : "/";
             const joinDelimiter = os === WINDOWS ? "\\" : "/";
 
-            selectedPath = selectedPath.split(splitDelimiter)
+            currentPath = currentPath.split(splitDelimiter)
                 .slice(0, -1)
                 .join(joinDelimiter);
 
-            await invoke('update_download_path', {path: selectedPath});
-            console.log('Download directory set to:', selectedPath);
+            setSelectedPath(currentPath);
+            await invoke('update_download_path', {path: currentPath});
+            console.log('Download directory set to:', currentPath);
         } catch (error) {
             console.error('Error invoking update_download_path:', error);
         }
@@ -77,6 +78,17 @@ export default function URLManager({onDWLDListChange, filteredCount, filteredTyp
         }
 
         await pathSelector(response);
+
+        const filePayload = {
+            file_name: response.file_name,
+            time_of_creation: Date.now(),
+            total_size: response.file_size,
+            completion_status: "Processing",
+            avg_upload_speed: 0,
+            avg_download_speed: 0
+        };
+
+        await invoke('download_test', {url: URL, filePayload});
     };
 
     const handleInputChange = (event) => {
