@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 use std::sync::Arc;
+use std::path::Path;
 
 use anyhow::{anyhow, Result};
 use reqwest::Client;
@@ -12,6 +13,7 @@ use tokio::task;
 use tokio::time::{Duration, Instant, sleep};
 
 use serde::{Serialize, Deserialize};
+use crate::commands::get_default_download_path;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileInfo {
@@ -108,8 +110,12 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
 
     let file_name = file_payload.file_name.clone(); // Clone the file name to move into the closure
 
+    // load the app config default download path and create the file
+    let default_download_path = get_default_download_path().unwrap();
+    let download_path = Path::new(&default_download_path).join(file_name);
+
     task::spawn_blocking(move || {
-        let mut file = File::create(&file_name)?;
+        let mut file = File::create(&download_path)?;
         for (_, chunk) in chunks {
             file.write_all(&chunk)?;
         }
