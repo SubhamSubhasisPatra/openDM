@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+/config.json/
 
 *.db
 file_info.db
