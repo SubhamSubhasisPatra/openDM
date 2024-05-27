@@ -1,13 +1,12 @@
-import React, {useContext, useEffect, useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {invoke} from "@tauri-apps/api/tauri";
-import {SelectedItemContext} from "../../contexts/SelectedItemContext.jsx";
-import {FILTER_ALL} from "../../common/constants/index.js";
-
+import React, {useContext, useEffect, useState} from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTrashCan} from '@fortawesome/free-solid-svg-icons';
+import {invoke} from '@tauri-apps/api/tauri';
+import {SelectedItemContext} from '../../contexts/SelectedItemContext.jsx';
+import {FILTER_ALL} from '../../common/constants/index.js';
+import MultipartProgressBar from './MultipartProgressBar/MultipartProgressBar.jsx';
 
 const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
-
     const {selectedItem} = useContext(SelectedItemContext);
 
     // Initialize downloadList based on selectedItem
@@ -20,7 +19,7 @@ const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
 
     const [downloadList, setDownloadList] = useState(getInitialDownloadList);
 
-    const downloadFilter = (selectedFilter) => {
+    const downloadFilter = selectedFilter => {
         let currentFilter;
 
         if (!selectedFilter || selectedFilter === FILTER_ALL) {
@@ -42,15 +41,14 @@ const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
         onFilterCountChange(downloadList.length);
     }, [selectedItem, fileList]);
 
-    const deleteHandler = async (id) => {
+    const deleteHandler = async id => {
         await invoke('delete_file', {id});
-    }
+    };
 
     return (
-
-        <div className="h-screen overflow-y-auto scrollbar-hid">
+        <div className="h-screen overflow-y-auto scrollbar-hide">
             <table className="min-w-full bg-white dark:bg-zinc-800">
-                <thead className="sticky top-0 bg-white">
+                <thead className="sticky top-0 bg-white dark:bg-zinc-900">
                 <tr>
                     <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Filename</th>
                     <th className="px-4 py-2 text-left text-zinc-600 dark:text-zinc-400">Status</th>
@@ -60,36 +58,34 @@ const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
                 </tr>
                 </thead>
                 <tbody>
-                {
-                    downloadList && downloadList.map((file, index) => {
+                {downloadList &&
+                    downloadList.map((file, index) => {
                         const statusPrev = `${file.status}%`;
                         return (
-                            <tr key={index} className="border-t border-zinc-200 dark:border-zinc-700">
-                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.file_name}</td>
-                                <td className="px-4 py-2">
-                                    <div className="flex items-center">
-                                        <div className="w-24 h-4 bg-zinc-200 dark:bg-zinc-700 rounded-full mr-2">
-                                            <div className="h-4 bg-green-500 rounded-full"
-                                                 style={{width: '100%'}}></div>
-                                        </div>
-                                        <span className="text-zinc-600 dark:text-zinc-400">{statusPrev}</span>
-                                    </div>
-                                </td>
-                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.speed}</td>
-                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.size}</td>
-                                <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">
-                                    <button onClick={() => deleteHandler(file.id)}>
-                                        <FontAwesomeIcon icon={faTrashCan}/>
-                                    </button>
-                                </td>
-                            </tr>
+                            <React.Fragment key={index}>
+                                <tr className="border-t border-zinc-200 dark:border-zinc-700">
+                                    <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.file_name}</td>
+                                    <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.status}</td>
+                                    <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.speed}</td>
+                                    <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">{file.size}</td>
+                                    <td className="px-4 py-2 text-zinc-800 dark:text-zinc-200">
+                                        <button onClick={() => deleteHandler(file.id)}>
+                                            <FontAwesomeIcon icon={faTrashCan}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="5" className="px-4 py-2">
+                                        <MultipartProgressBar numParts={Math.floor(Math.random() * 10) + 1}/>
+                                    </td>
+                                </tr>
+                            </React.Fragment>
                         );
-                    })
-                }
-
+                    })}
                 </tbody>
             </table>
-        </div>);
+        </div>
+    );
 };
 
 export default DownloadList;
