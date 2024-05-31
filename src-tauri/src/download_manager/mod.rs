@@ -1,6 +1,5 @@
 pub mod metadata_retriever;
 
-use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -61,7 +60,7 @@ async fn download_chunk(
         .await?;
     let status = res.status();
     if status.is_success() {
-        let mut chunk = res.bytes().await?;
+        let chunk = res.bytes().await?;
         // Simulate downloading progress (update every second)
         for _ in 0..10 {
             sleep(Duration::from_millis(10)).await; // Wait 100ms (simulate 1/10th of a second)
@@ -79,8 +78,9 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
     let file_size = get_file_size(client, url).await?;
 
     // Define minimum and maximum chunk sizes
-    let min_chunk_size = 10 * 1024 * 1024; // 1 MB
+    let min_chunk_size = 10 * 1024 * 1024; // 10 MB
     let max_chunk_size = 100 * 1024 * 1024; // 100 MB
+
 
     // Calculate the number of chunks
     let num_chunks = std::cmp::max(1, std::cmp::min(100, (file_size / min_chunk_size) as usize));
