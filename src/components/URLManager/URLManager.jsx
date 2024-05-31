@@ -5,11 +5,17 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { save } from "@tauri-apps/api/dialog";
 import { MAC_OS, WINDOWS } from "../../common/constants/index.js";
 
-export default function URLManager({ onDWLDListChange, filteredCount, filteredType }) {
+export default function URLManager({
+  onDWLDListChange,
+  filteredCount,
+  filteredType,
+}) {
   const [fileId, setFileId] = useState(0);
   const [selectedPath, setSelectedPath] = useState("");
   const [downloadList, setDownloadList] = useState([]);
-  const [URL, setURL] = useState("https://cdimage.ubuntu.com/ubuntu-base/releases/focal/release/SHA256SUMS.gpg"); // TODO: The Default URL will be removed
+  const [URL, setURL] = useState(
+    "https://bryan.myfast.link/ext/dl/filenext/814c82d68c/Stocks_5389.rar",
+  ); // TODO: The Default URL will be removed
   const [warning, setWarning] = useState(false);
 
   useEffect(() => {
@@ -110,7 +116,9 @@ export default function URLManager({ onDWLDListChange, filteredCount, filteredTy
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-4">
-        <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">{filteredType}</h2>
+        <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">
+          {filteredType}
+        </h2>
         <span className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">
           {filteredCount}
         </span>

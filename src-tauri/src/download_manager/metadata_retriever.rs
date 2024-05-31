@@ -1,7 +1,6 @@
-use reqwest::header::{CONTENT_LENGTH, CONTENT_TYPE, HeaderMap};
+use reqwest::header::{HeaderMap, CONTENT_LENGTH, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use std::fmt;
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileDetails {
@@ -9,7 +8,6 @@ pub struct FileDetails {
     pub file_size: u64,
     pub content_type: String,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum FetchFileInfoError {
@@ -28,15 +26,25 @@ impl fmt::Display for FetchFileInfoError {
 
 impl std::error::Error for FetchFileInfoError {}
 
-
 fn extract_file_name(headers: &HeaderMap, url: &str) -> String {
     headers
         .get("Content-Disposition")
         .and_then(|cd| cd.to_str().ok())
-        .and_then(|cd| cd.split("filename=").nth(1))
-        .map(|filename| filename.trim_matches('"'))
-        .unwrap_or_else(|| url.split('/').last().unwrap_or("unknown"))
-        .to_string()
+        .and_then(|cd| {
+            cd.split(';').find_map(|part| {
+                if part.trim().starts_with("filename=") {
+                    Some(
+                        part.trim()
+                            .trim_start_matches("filename=")
+                            .trim_matches('"')
+                            .to_string(),
+                    )
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap_or_else(|| url.split('/').last().unwrap_or("unknown").to_string())
 }
 
 fn extract_file_size(headers: &HeaderMap) -> u64 {

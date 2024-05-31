@@ -3,17 +3,17 @@ pub mod metadata_retriever;
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
-use std::sync::Arc;
 use std::path::Path;
+use std::sync::Arc;
 
 use anyhow::{anyhow, Result};
 use reqwest::Client;
 use tokio::sync::Mutex;
 use tokio::task;
-use tokio::time::{Duration, Instant, sleep};
+use tokio::time::{sleep, Duration, Instant};
 
-use serde::{Serialize, Deserialize};
 use crate::commands::get_default_download_path;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileInfo {
@@ -33,7 +33,8 @@ struct ChunkProgress {
 
 async fn get_file_size(client: &Client, url: &str) -> Result<u64> {
     let res = client.head(url).send().await?;
-    let content_length = res.headers()
+    let content_length = res
+        .headers()
         .get(reqwest::header::CONTENT_LENGTH)
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.parse().ok());
@@ -45,10 +46,19 @@ async fn supports_partial_content(client: &Client, url: &str) -> Result<bool> {
     Ok(res.headers().get(reqwest::header::ACCEPT_RANGES).is_some())
 }
 
-async fn download_chunk(client: &Client, start: u64, end: u64, index: usize, url: &str, progress: Arc<Mutex<Vec<ChunkProgress>>>) -> Result<(usize, Vec<u8>)> {
-    let res = client.get(url)
+async fn download_chunk(
+    client: &Client,
+    start: u64,
+    end: u64,
+    index: usize,
+    url: &str,
+    progress: Arc<Mutex<Vec<ChunkProgress>>>,
+) -> Result<(usize, Vec<u8>)> {
+    let res = client
+        .get(url)
         .header(reqwest::header::RANGE, format!("bytes={}-{}", start, end))
-        .send().await?;
+        .send()
+        .await?;
     let status = res.status();
     if status.is_success() {
         let mut chunk = res.bytes().await?;
@@ -65,12 +75,11 @@ async fn download_chunk(client: &Client, start: u64, end: u64, index: usize, url
     }
 }
 
-
 async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo) -> Result<()> {
     let file_size = get_file_size(client, url).await?;
 
     // Define minimum and maximum chunk sizes
-    let min_chunk_size = 1 * 1024 * 1024; // 1 MB
+    let min_chunk_size = 10 * 1024 * 1024; // 1 MB
     let max_chunk_size = 100 * 1024 * 1024; // 100 MB
 
     // Calculate the number of chunks
@@ -78,7 +87,13 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
     let chunk_size = std::cmp::max(min_chunk_size, file_size / num_chunks as u64);
 
     // Initialize progress for each chunk
-    let progress = Arc::new(Mutex::new(vec![ChunkProgress { index: 0, progress: 0 }; num_chunks]));
+    let progress = Arc::new(Mutex::new(vec![
+        ChunkProgress {
+            index: 0,
+            progress: 0
+        };
+        num_chunks
+    ]));
 
     let mut handles = vec![];
 
@@ -120,7 +135,8 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
             file.write_all(&chunk)?;
         }
         Result::<(), std::io::Error>::Ok(())
-    }).await??;
+    })
+    .await??;
 
     Ok(())
 }
@@ -129,13 +145,17 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
 pub async fn download_test(url: &str, file_payload: FileInfo) -> Result<(), String> {
     let client = Client::new();
 
-    let can_download_multipart = supports_partial_content(&client, &url).await.map_err(|e| e.to_string())?;
+    let can_download_multipart = supports_partial_content(&client, &url)
+        .await
+        .map_err(|e| e.to_string())?;
 
     println!("Type : {}", can_download_multipart);
 
     if can_download_multipart {
         let start = Instant::now();
-        download_multipart(&client, &url, &file_payload).await.map_err(|e| e.to_string())?;
+        download_multipart(&client, &url, &file_payload)
+            .await
+            .map_err(|e| e.to_string())?;
         let duration = start.elapsed();
         println!("Multipart download took: {:?}", duration);
     }
@@ -144,4 +164,3 @@ pub async fn download_test(url: &str, file_payload: FileInfo) -> Result<(), Stri
 
     Ok(())
 }
-
