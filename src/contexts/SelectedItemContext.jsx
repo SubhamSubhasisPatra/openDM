@@ -9,8 +9,8 @@ const SelectedItemProvider = ({children}) => {
 
 
   return (<SelectedItemContext.Provider value={{selectedItem, setSelectedItem}}>
-      {children}
-    </SelectedItemContext.Provider>);
+    {children}
+  </SelectedItemContext.Provider>);
 };
 
 export {SelectedItemProvider, SelectedItemContext};
