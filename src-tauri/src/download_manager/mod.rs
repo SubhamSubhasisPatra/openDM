@@ -2,7 +2,7 @@ pub mod metadata_retriever;
 
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::{anyhow, Result};
@@ -30,7 +30,7 @@ pub struct FileInfo {
 struct ChunkProgress {
     index: usize,
     progress: usize,
-    total_bytes: u64
+    total_bytes: u64,
 }
 
 async fn get_file_size(client: &Client, url: &str) -> Result<u64> {
@@ -46,6 +46,12 @@ async fn get_file_size(client: &Client, url: &str) -> Result<u64> {
 async fn supports_partial_content(client: &Client, url: &str) -> Result<bool> {
     let res = client.head(url).send().await?;
     Ok(res.headers().get(reqwest::header::ACCEPT_RANGES).is_some())
+}
+
+fn get_file_creation_path(file_payload: &FileInfo) -> PathBuf {
+    let file_name = file_payload.file_name.clone();
+    let default_download_path = get_default_download_path().unwrap();
+    Path::new(&default_download_path).join(file_name)
 }
 
 
@@ -152,10 +158,11 @@ async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) 
 
     chunks.sort_by_key(|&(index, _)| index);
 
-    let file_name = file_payload.file_name.clone(); // Clone the file name to move into the closure
+    // load the app config default download path and create the file
+    let download_path = get_file_creation_path(&file_payload);
 
     task::spawn_blocking(move || {
-        let mut file = File::create(&file_name)?;
+        let mut file = File::create(&download_path)?;
         for (_, chunk) in chunks {
             file.write_all(&chunk)?;
         }
@@ -164,6 +171,27 @@ async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) 
 
     Ok(())
 }
+
+
+async fn download_sequential(client: &Client, url: &str, file_payload: FileInfo) -> Result<()> {
+    let res = client.get(url).send().await?;
+    let status = res.status();
+    if status.is_success() {
+        let download_path: PathBuf = get_file_creation_path(&file_payload);
+
+        let mut file = File::create(&download_path)?;
+        let mut stream = res.bytes_stream();
+
+        while let Some(item) = stream.next().await {
+            let bytes = item?;
+            file.write_all(&bytes)?;
+        }
+        Ok(())
+    } else {
+        Err(anyhow!("Failed to download file with status: {}", status))
+    }
+}
+
 
 #[tauri::command]
 pub async fn download_start(url: &str, file_payload: FileInfo) -> Result<(), String> {
@@ -175,9 +203,16 @@ pub async fn download_start(url: &str, file_payload: FileInfo) -> Result<(), Str
 
     println!("Support Multipart : {}", can_download_multipart);
 
-    if can_download_multipart {
+    if !can_download_multipart {
         let start = Instant::now();
         download_multipart(&client, &url, file_payload.clone())
+            .await
+            .map_err(|e| e.to_string())?;
+        let duration = start.elapsed();
+        println!("Multipart download took: {:?}", duration);
+    } else {
+        let start = Instant::now();
+        download_sequential(&client, &url, file_payload.clone())
             .await
             .map_err(|e| e.to_string())?;
         let duration = start.elapsed();
