@@ -20,6 +20,7 @@ This app uses `React (UI) + Rust (Backend)`.
 
 ``
 git clone https://github.com/SubhamSubhasisPatra/openDM.git
+
 cd openDM
 ``
 
