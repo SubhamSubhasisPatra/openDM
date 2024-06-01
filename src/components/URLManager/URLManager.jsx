@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import { invoke } from "@tauri-apps/api/tauri";
-import { save } from "@tauri-apps/api/dialog";
-import { MAC_OS, WINDOWS } from "../../common/constants/index.js";
+import React, {useEffect, useState} from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
+import {invoke} from "@tauri-apps/api/tauri";
+import {save} from "@tauri-apps/api/dialog";
+import {MAC_OS, WINDOWS} from "../../common/constants/index.js";
 
 export default function URLManager({
-  onDWLDListChange,
-  filteredCount,
-  filteredType,
-}) {
+                                     onDWLDListChange, filteredCount, filteredType,
+                                   }) {
 
   // TODO: The Default URL will be removed
   const DEFAULT_URL = 'https://cdimage.ubuntu.com/ubuntu-base/releases/focal/release/SHA256SUMS.gpg';
@@ -17,9 +15,7 @@ export default function URLManager({
   const [fileId, setFileId] = useState(0);
   const [selectedPath, setSelectedPath] = useState("");
   const [downloadList, setDownloadList] = useState([]);
-  const [URL, setURL] = useState(
-      DEFAULT_URL,
-  );
+  const [URL, setURL] = useState(DEFAULT_URL,);
   const [warning, setWarning] = useState(false);
 
   useEffect(() => {
@@ -30,7 +26,8 @@ export default function URLManager({
       setSelectedPath(path);
     };
 
-    fetchData();
+    fetchData().then(r => {
+    });
   }, []); // Only run once when the component mounts
 
   useEffect(() => {
@@ -42,9 +39,7 @@ export default function URLManager({
       if (selectedPath) return;
 
       let currentPath = await save({
-        title: "Save File",
-        defaultPath: response.file_name,
-        filters: [{ name: "All Files", extensions: ["*"] }],
+        title: "Save File", defaultPath: response.file_name, filters: [{name: "All Files", extensions: ["*"]}],
       });
 
       await pathManager(currentPath);
@@ -68,7 +63,7 @@ export default function URLManager({
         .join(joinDelimiter);
 
       setSelectedPath(currentPath);
-      await invoke("update_download_path", { path: currentPath });
+      await invoke("update_download_path", {path: currentPath});
       console.log("Download directory set to:", currentPath);
     } catch (error) {
       console.error("Error invoking update_download_path:", error);
@@ -76,12 +71,19 @@ export default function URLManager({
   };
 
   const downloadClickHandler = async () => {
+
+    //TODO: Enable this to add dummy data to db
+    //
+    // for await (const fileInfo of payload)
+    //   await invoke('store_file_info', {fileInfo});
+    // return
+
     if (URL.trim().length === 0) {
       setWarning(true);
       return;
     }
 
-    const response = await invoke("fetch_file_info", { url: URL });
+    const response = await invoke("fetch_file_info", {url: URL});
     console.log("Input Value:", response);
     setURL("");
 
@@ -101,7 +103,7 @@ export default function URLManager({
       avg_download_speed: 0,
     };
 
-    await invoke("download_test", { url: URL, filePayload });
+    await invoke("download_start", {url: URL, filePayload});
   };
 
   const handleInputChange = (event) => {
@@ -117,42 +119,36 @@ export default function URLManager({
     }
   };
 
-  return (
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center space-x-4">
-        <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">
-          {filteredType}
-        </h2>
-        <span className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">
+  return (<div className="flex items-center justify-between mb-4">
+    <div className="flex items-center space-x-4">
+      <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">
+        {filteredType}
+      </h2>
+      <span className="text-l bg-zinc-100 dark:bg-zinc-700 p-2 rounded-lg text-zinc-600 dark:text-zinc-400">
           {filteredCount}
         </span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <input
-          type="text"
-          name="URLBox"
-          placeholder="Download URL"
-          className={`px-4 py-2 border rounded-lg text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 border-zinc-200 dark:border-zinc-600 border-transparent hover:border-zinc-300`}
-          value={URL}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-        />
-        <div className="flex justify-center">
-          {[
-            { icon: faDownload, onClick: downloadClickHandler },
-            { icon: faPlay },
-            { icon: faPause },
-          ].map((item, index) => (
-            <button
-              key={index}
-              onClick={item.onClick}
-              className="p-3 m-1 rounded-lg w-10 h-10 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 flex justify-center items-center border border-transparent hover:border-zinc-300"
-            >
-              <FontAwesomeIcon icon={item.icon} />
-            </button>
-          ))}
-        </div>
+    </div>
+    <div className="flex items-center space-x-2">
+      <input
+        type="text"
+        name="URLBox"
+        placeholder="Download URL"
+        className={`px-4 py-2 border rounded-lg text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 border-zinc-200 dark:border-zinc-600 border-transparent hover:border-zinc-300`}
+        value={URL}
+        onChange={handleInputChange}
+        onKeyPress={handleKeyPress}
+      />
+      <div className="flex justify-center">
+        {[{
+          icon: faDownload, onClick: downloadClickHandler
+        }, {icon: faPlay}, {icon: faPause},].map((item, index) => (<button
+          key={index}
+          onClick={item.onClick}
+          className="p-3 m-1 rounded-lg w-10 h-10 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 flex justify-center items-center border border-transparent hover:border-zinc-300"
+        >
+          <FontAwesomeIcon icon={item.icon}/>
+        </button>))}
       </div>
     </div>
-  );
+  </div>);
 }

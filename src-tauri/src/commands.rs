@@ -8,32 +8,39 @@ use serde::de::Error;
 #[tauri::command]
 pub fn store_file_info(file_info: FileInfo) -> Result<Vec<FileInfo>, CustomError> {
     let conn = establish_connection()?;
-    // error!("The file data: {}", file_info.file_name);
     conn.execute(
-        "INSERT INTO file_info (id , file_name, size, status, speed) VALUES (?1, ?2, ?3, ?4, ?5)",
+        "INSERT INTO file_info (file_name, time_of_creation, total_size, completion_status, avg_upload_speed, avg_download_speed, file_path, download_progress)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
         params![
-            file_info.id,
             file_info.file_name,
-            file_info.size,
-            file_info.status,
-            file_info.speed
+            file_info.time_of_creation,
+            file_info.total_size,
+            file_info.completion_status,
+            file_info.avg_upload_speed,
+            file_info.avg_download_speed,
+            file_info.file_path,
+            file_info.download_progress,
         ],
     )?;
 
-    return get_all_file_info();
+    get_all_file_info()
 }
 
 #[tauri::command]
 pub fn get_all_file_info() -> Result<Vec<FileInfo>, CustomError> {
     let conn = establish_connection()?;
-    let mut stmt = conn.prepare("SELECT file_name, size, status, speed , id FROM file_info")?;
+    let mut stmt = conn.prepare("SELECT file_name, time_of_creation, total_size, completion_status, avg_upload_speed, avg_download_speed, file_path, download_progress, id FROM file_info")?;
     let file_info_iter = stmt.query_map([], |row| {
         Ok(FileInfo {
+            id: row.get(8)?,
             file_name: row.get(0)?,
-            size: row.get(1)?,
-            status: row.get(2)?,
-            speed: row.get(3)?,
-            id: row.get(4)?,
+            time_of_creation: row.get(1)?,
+            total_size: row.get(2)?,
+            completion_status: row.get(3)?,
+            avg_upload_speed: row.get(4)?,
+            avg_download_speed: row.get(5)?,
+            file_path: row.get(6)?,
+            download_progress: row.get(7)?,
         })
     })?;
 
