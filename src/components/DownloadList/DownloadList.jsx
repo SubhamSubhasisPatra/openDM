@@ -6,7 +6,7 @@ import {SelectedItemContext} from '../../contexts/SelectedItemContext.jsx';
 import {FILTER_ALL} from '../../common/constants/index.js';
 import MultipartProgressBar from './MultipartProgressBar/MultipartProgressBar.jsx';
 
-const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
+const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange, onDelete}) => {
     const {selectedItem} = useContext(SelectedItemContext);
 
     // Initialize downloadList based on selectedItem
@@ -42,7 +42,12 @@ const DownloadList = ({fileList, onFilterCountChange, onFilterTypeChange}) => {
     }, [selectedItem, fileList]);
 
     const deleteHandler = async id => {
-        await invoke('delete_file', {id});
+        try {
+            await invoke('delete_file', {id});
+            onDelete(id); // Update the parent state
+        } catch (error) {
+            console.error("Failed to delete the file", error);
+        }
     };
 
     return (

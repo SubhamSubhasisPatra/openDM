@@ -142,7 +142,7 @@ async fn download_multipart(client: &Client, url: &str, file_payload: &FileInfo)
 }
 
 #[tauri::command]
-pub async fn download_test(url: &str, file_payload: FileInfo) -> Result<(), String> {
+pub async fn download_start(url: &str, file_payload: FileInfo) -> Result<(), String> {
     let client = Client::new();
 
     let can_download_multipart = supports_partial_content(&client, &url)

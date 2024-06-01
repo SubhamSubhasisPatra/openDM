@@ -10,12 +10,16 @@ export default function URLManager({
   filteredCount,
   filteredType,
 }) {
+
+  // TODO: The Default URL will be removed
+  const DEFAULT_URL = 'https://cdimage.ubuntu.com/ubuntu-base/releases/focal/release/SHA256SUMS.gpg';
+
   const [fileId, setFileId] = useState(0);
   const [selectedPath, setSelectedPath] = useState("");
   const [downloadList, setDownloadList] = useState([]);
   const [URL, setURL] = useState(
-    "https://bryan.myfast.link/ext/dl/filenext/814c82d68c/Stocks_5389.rar",
-  ); // TODO: The Default URL will be removed
+      DEFAULT_URL,
+  );
   const [warning, setWarning] = useState(false);
 
   useEffect(() => {
@@ -126,6 +130,7 @@ export default function URLManager({
       <div className="flex items-center space-x-2">
         <input
           type="text"
+          name="URLBox"
           placeholder="Download URL"
           className={`px-4 py-2 border rounded-lg text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 border-zinc-200 dark:border-zinc-600 border-transparent hover:border-zinc-300`}
           value={URL}

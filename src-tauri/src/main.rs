@@ -10,7 +10,7 @@ mod download_manager;
 
 use commands::{store_file_info, get_all_file_info, delete_file, update_download_path, get_default_download_path};
 use download_manager::metadata_retriever::fetch_file_info;
-use download_manager::download_test;
+use download_manager::download_start;
 use os::get_os;
 
 fn main() {
@@ -26,7 +26,7 @@ fn main() {
             fetch_file_info,
             delete_file,
             get_os,
-            download_test
+            download_start
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
