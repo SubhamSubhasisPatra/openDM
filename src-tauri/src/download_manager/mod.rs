@@ -1,20 +1,20 @@
-pub mod metadata_retriever;
-
-use std::fs::File;
+use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Error, Result};
+use futures_util::StreamExt;
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 use tokio::task;
-use tokio::time::{sleep, Duration, Instant};
-use futures_util::StreamExt;
-
+use tokio::task::JoinHandle;
+use tokio::time::Instant;
 
 use crate::commands::get_default_download_path;
-use serde::{Deserialize, Serialize};
+
+pub mod metadata_retriever;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct FileInfo {
@@ -109,11 +109,8 @@ fn calculate_chunk_size(file_size: u64) -> (u64, usize) {
 }
 
 
-async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) -> Result<()> {
-    let file_size = get_file_size(client, url).await?;
-
-    // Define minimum and maximum chunk sizes
-    let (chunk_size, num_chunks) = calculate_chunk_size(file_size);
+async fn progress_handler(num_chunks: usize, chunk_size: u64, file_size: u64, url: &str, client: &Client) -> Vec<JoinHandle<Result<(usize, Vec<u8>)>>> {
+    let mut handles = vec![];
 
     // Initialize progress for each chunk
     let progress = Arc::new(Mutex::new(vec![ChunkProgress { index: 0, progress: 0, total_bytes: chunk_size }; num_chunks]));
@@ -130,7 +127,6 @@ async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) 
         println!("Chunk {}: {} - {} ({} bytes)", i, start, end, chunk_size);
     }
 
-    let mut handles = vec![];
 
     for i in 0..num_chunks {
         let start = i as u64 * chunk_size;
@@ -147,49 +143,52 @@ async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) 
         }));
     }
 
+    return handles;
+}
+
+async fn multi_thread_download(handles: Vec<JoinHandle<Result<(usize, Vec<u8>)>>>, file_payload: &FileInfo) -> Result<(), Error> {
     let mut chunks = vec![];
     for handle in handles {
         match handle.await {
             Ok(Ok((index, chunk))) => chunks.push((index, chunk)),
-            Ok(Err(e)) => return Err(e.into()),
-            Err(e) => return Err(e.into()),
+            Ok(Err(e)) => return Err(*Box::new(e)),
+            Err(e) => return Err(Error::from(Box::new(e))),
         }
     }
 
     chunks.sort_by_key(|&(index, _)| index);
 
-    // load the app config default download path and create the file
+    // Load the app config default download path and create the file
     let download_path = get_file_creation_path(&file_payload);
 
     task::spawn_blocking(move || {
-        let mut file = File::create(&download_path)?;
+        let mut file = std::fs::File::create(&download_path)?;
         for (_, chunk) in chunks {
             file.write_all(&chunk)?;
         }
-        Result::<(), std::io::Error>::Ok(())
+        Result::<(), io::Error>::Ok(())
     }).await??;
 
     Ok(())
 }
 
+async fn download_multipart(client: &Client, url: &str, file_payload: FileInfo) -> Result<()> {
+    let file_size = get_file_size(client, url).await?;
+    let (chunk_size, num_chunks) = calculate_chunk_size(file_size);
+    let handles = progress_handler(num_chunks, chunk_size, file_size, &url, &client).await;
+
+    multi_thread_download(handles, &file_payload).await.expect("Failed to download the file in multi tread");
+    Ok(())
+}
+
 
 async fn download_sequential(client: &Client, url: &str, file_payload: FileInfo) -> Result<()> {
-    let res = client.get(url).send().await?;
-    let status = res.status();
-    if status.is_success() {
-        let download_path: PathBuf = get_file_creation_path(&file_payload);
+    let file_size = get_file_size(client, url).await?;
+    let (chunk_size, num_chunks) = (file_size, 1);
+    let handles = progress_handler(num_chunks, chunk_size, file_size, &url, &client).await;
 
-        let mut file = File::create(&download_path)?;
-        let mut stream = res.bytes_stream();
-
-        while let Some(item) = stream.next().await {
-            let bytes = item?;
-            file.write_all(&bytes)?;
-        }
-        Ok(())
-    } else {
-        Err(anyhow!("Failed to download file with status: {}", status))
-    }
+    multi_thread_download(handles, &file_payload).await.expect("Failed to download the file in multi tread");
+    Ok(())
 }
 
 
