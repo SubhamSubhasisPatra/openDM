@@ -88,6 +88,8 @@ async fn download_chunk(client: &Client, start: u64, end: u64, index: usize, url
     }
 }
 
+// Add proper doc string
+// Calculate the chunk size based on the file size
 fn calculate_chunk_size(file_size: u64) -> (u64, usize) {
     let num_chunks: usize;
     let min_chunk_size: u64;
